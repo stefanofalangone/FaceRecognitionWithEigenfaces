@@ -9,21 +9,27 @@ class DatasetLoader:
     n_images_per_directory = 0
     width_images = 0
     height_images = 0
+    should_check_pixel_format = True
     training_set = None
     test_set = None
 
-    def __init__(self):
+    def __init__(self, path="dataset/"):
         print("create the dataset Loader\n")
-        self.setupImgFormat(40, 10, 92, 112)
+        self.setupDirectoryFormat(40, 10)
+        self.setupImgFormat(92, 112)
         self.training_set, self.test_set = self.extractTrainingsetTestset(70)
 
         self.showImage(self.training_set[:,0])
 
-    def setupImgFormat(self, n_directories, n_images_per_directory, width_images, height_images):
+    def setupImgFormat(self, width_img=92, height_img=112):
+        self.width_images = width_img
+        self.height_images = height_img
+        should_check_pixel_format = False
+
+    def setupDirectoryFormat(self, n_directories=40, n_images_per_directory=10):
         self.n_directories = n_directories
         self.n_images_per_directory = n_images_per_directory
-        self.width_images = width_images
-        self.height_images = height_images
+
 
     def readPgm(self, path):
         pgmf = open(path, 'rb')
@@ -63,3 +69,8 @@ class DatasetLoader:
     def showImage(self, vectorialized_image):
         plt.imshow(vectorialized_image.reshape((112, 92)), cmap='gray')
         plt.show()
+
+    def load(self):
+        for subj in range(1, 41, 1):
+            for pic in range(1, 11, 1):
+                print("subj ", subj, ". Pic ", pic)
