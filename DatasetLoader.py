@@ -46,8 +46,8 @@ class DatasetLoader:
         return np.array(vectorialized_image, dtype='float')
 
     def extractTrainingsetTestset(self, trainingPercentage):
-        trainingSet = []
-        testSet = []
+        training_set = []
+        test_set = []
         data_list = [i for i in range(1, self.n_images_per_directory+1)]
         number_of_training_images_per_directories = int((self.n_images_per_directory * trainingPercentage)/100)
         number_of_testing_images_per_directories = self.n_images_per_directory - number_of_training_images_per_directories
@@ -58,13 +58,12 @@ class DatasetLoader:
             path = self.path + 's'+str(i)+'/'
 
             for j in train_list:
-                trainingSet.append(self.readPgm(path+str(j)+'.pgm'))
+                training_set.append(self.readPgm(path+str(j)+'.pgm'))
 
             for k in test_list:
-                testSet.append(self.readPgm(path+str(k)+'.pgm'))
+                test_set.append(self.readPgm(path+str(k)+'.pgm'))
 
-
-        return np.stack(trainingSet, axis=-1), np.stack(testSet, axis=-1)
+        return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1)
 
     def getTrainingSet(self):
         return self.training_set
