@@ -66,12 +66,6 @@ class DatasetLoader:
 
         return np.stack(trainingSet, axis=-1), np.stack(testSet, axis=-1)
 
-    def getTrainingSet(self):
-        return self.training_set
-
-    def getTestSet(self):
-        return self.test_set
-
     def showImage(self, vectorialized_image):
         plt.imshow(vectorialized_image.reshape((112, 92)), cmap='gray')
         plt.show()
