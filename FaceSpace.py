@@ -34,7 +34,10 @@ class FaceSpace:
         #    showImage( self.eigenface_basis[:, i] )
 
     def centerData(self, images):
-        centroid = self.calculateCentroid(images)
+        if (self.centroid == None):
+            centroid = self.calculateCentroid(images)
+        else:
+            centroid = self.centroid
         return images - centroid
 
     def calculateCentroid(self, images):
