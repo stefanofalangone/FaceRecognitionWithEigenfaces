@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+
 import numpy as np
 import random
 
@@ -80,6 +80,3 @@ class DatasetLoader:
     def getTestSet(self):
         return self.test_set
 
-    def showImage(self, vectorialized_image):
-        plt.imshow(vectorialized_image.reshape((112, 92)), cmap='gray')
-        plt.show()
