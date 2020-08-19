@@ -3,12 +3,15 @@ from Utility import showImage
 
 class FaceSpace:
 
-    threshold = 30.0
+    threshold = 10**-3
     eigenface_basis = None
+    centroid = None
 
     def __init__(self, training_set):
-        self.training_set = training_set
-        #print(training_set)
+        self.training_set = self.centerData( training_set )
+        print( self.training_set )
+        #showImage(self.training_set[:, 20])
+        #showImage(training_set[:, 20])
         self.computeEigenfaceBasis()
 
     def computeEigenfaceBasis(self):
@@ -19,13 +22,24 @@ class FaceSpace:
 
         i = 0
         current_vector = []
-        while(D[i] / D[ D.size - 1 ] > self.threshold):
+        while(D[i] > self.threshold):
                 current_vector.append( eigenvectors[: , i] )
-                print("division is ", D[i] / D[ D.size - 1 ])
-                print("D[i] and last are ", D[i], D[ D.size - 1 ])
+                #print("division is ", D[i] / D[ D.size - 1 ])
+                #print("D[i] and last are ", D[i], D[ D.size - 1 ])
                 i = i + 1
         self.eigenface_basis = np.stack(current_vector, axis = -1)
 
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
-        for i in range( self.eigenface_basis[0 , :].size ):
-            showImage( self.eigenface_basis[:, i] )
+        #for i in range( self.eigenface_basis[0 , :].size ):
+        #    showImage( self.eigenface_basis[:, i] )
+
+    def centerData(self, images):
+        centroid = self.calculateCentroid(images)
+        centroid = centroid.reshape(centroid.size, 1)
+        return images - centroid
+
+    def calculateCentroid(self, images):
+        number_of_images = images[0, :].size
+        self.centroid = images.sum(axis=1) / number_of_images
+        return self.centroid
+
