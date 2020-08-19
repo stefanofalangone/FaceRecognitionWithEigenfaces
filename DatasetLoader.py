@@ -13,8 +13,9 @@ class DatasetLoader:
     training_set = None
     test_set = None
 
-    def __init__(self, path="dataset/"):
+    def __init__(self, path="./dataset/"):
         print("create the dataset Loader\n")
+        self.path = path
         self.setupDirectoryFormat(40, 10)
         self.setupImgFormat(92, 112)
         self.training_set, self.test_set = self.extractTrainingsetTestset(70)
@@ -30,20 +31,6 @@ class DatasetLoader:
         self.n_directories = n_directories
         self.n_images_per_directory = n_images_per_directory
 
-
-    def readPgm(self, path):
-        pgmf = open(path, 'rb')
-        assert pgmf.readline() == b'P5\n'
-        width, height = [int(i) for i in pgmf.readline().split()]
-        max_val = int(pgmf.readline())
-        assert max_val <= 255
-
-        vectorialized_image = []
-        for k in range(height):
-            for j in range(width):
-                vectorialized_image.append(ord(pgmf.read(1)))
-
-        return np.array(vectorialized_image, dtype='float')
 
     def extractTrainingsetTestset(self, trainingPercentage):
         training_set = []
@@ -65,6 +52,21 @@ class DatasetLoader:
                 test_set.append(self.readPgm(path+str(k)+'.pgm'))
 
         return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1)
+
+    def readPgm(self, path):
+        pgmf = open(path, 'rb')
+        assert pgmf.readline() == b'P5\n'
+        width, height = [int(i) for i in pgmf.readline().split()]
+        max_val = int(pgmf.readline())
+        assert max_val <= 255
+
+        vectorialized_image = []
+        for k in range(height):
+            for j in range(width):
+                vectorialized_image.append(ord(pgmf.read(1)))
+
+        return np.array(vectorialized_image, dtype='float')
+
 
     def getTrainingSet(self):
         return self.training_set
