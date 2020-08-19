@@ -48,6 +48,7 @@ class DatasetLoader:
     def extractTrainingsetTestset(self, trainingPercentage):
         training_set = []
         test_set = []
+
         data_list = [i for i in range(1, self.n_images_per_directory+1)]
         number_of_training_images_per_directories = int((self.n_images_per_directory * trainingPercentage)/100)
         number_of_testing_images_per_directories = self.n_images_per_directory - number_of_training_images_per_directories
