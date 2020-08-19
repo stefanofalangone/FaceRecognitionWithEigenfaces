@@ -9,7 +9,6 @@ class DatasetLoader:
     n_images_per_directory = 0
     width_images = 0
     height_images = 0
-    should_check_pixel_format = True
     training_set = None
     test_set = None
 
@@ -25,7 +24,6 @@ class DatasetLoader:
     def setupImgFormat(self, width_img=92, height_img=112):
         self.width_images = width_img
         self.height_images = height_img
-        should_check_pixel_format = False
 
     def setupDirectoryFormat(self, n_directories=40, n_images_per_directory=10):
         self.n_directories = n_directories
@@ -85,8 +83,3 @@ class DatasetLoader:
     def showImage(self, vectorialized_image):
         plt.imshow(vectorialized_image.reshape((112, 92)), cmap='gray')
         plt.show()
-
-    def load(self):
-        for subj in range(1, 41, 1):
-            for pic in range(1, 11, 1):
-                print("subj ", subj, ". Pic ", pic)
