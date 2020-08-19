@@ -35,11 +35,11 @@ class FaceSpace:
 
     def centerData(self, images):
         centroid = self.calculateCentroid(images)
-        centroid = centroid.reshape(centroid.size, 1)
         return images - centroid
 
     def calculateCentroid(self, images):
         number_of_images = images[0, :].size
-        self.centroid = images.sum(axis=1) / number_of_images
+        centroid = images.sum(axis=1) / number_of_images
+        self.centroid = centroid.reshape(centroid.size, 1)
         return self.centroid
 
