@@ -53,12 +53,6 @@ class DatasetLoader:
 
         return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1)
 
-    def readPgm(self, path):
-        pgmf = open(path, 'rb')
-        assert pgmf.readline() == b'P5\n'
-        width, height = [int(i) for i in pgmf.readline().split()]
-        max_val = int(pgmf.readline())
-        assert max_val <= 255
 
         vectorialized_image = []
         for k in range(height):
@@ -67,6 +61,20 @@ class DatasetLoader:
 
         return np.array(vectorialized_image, dtype='float')
 
+
+    def readPgm(self, path):
+        pgmf = open(path, 'rb')
+        pgmf.readline()
+        width, height = [int(i) for i in pgmf.readline().split()]
+        max_val = int(pgmf.readline())
+        assert max_val <= 255
+
+        vectorialized_image = []
+        for k in range(height):
+            for j in range(width):
+                vectorialized_image.append(ord(pgmf.read(1)))
+        pgmf.close()
+        return np.array(vectorialized_image, dtype='float')
 
     def getTrainingSet(self):
         return self.training_set
