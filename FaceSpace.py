@@ -21,7 +21,7 @@ class FaceSpace:
 
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i<279):
+        while(D[i] > self.threshold and i<19):
                 current_vector.append( eigenvectors[: , i] )
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])

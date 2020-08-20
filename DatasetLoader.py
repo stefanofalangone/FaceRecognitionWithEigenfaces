@@ -15,7 +15,7 @@ class DatasetLoader:
     def __init__(self, path="./dataset/"):
         print("create the dataset Loader\n")
         self.path = path
-        self.setupDirectoryFormat(40, 10)
+        self.setupDirectoryFormat(10, 2)
         self.setupImgFormat(92, 112)
         self.training_set, self.test_set = self.extractTrainingsetTestset(70)
 
