@@ -33,16 +33,16 @@ class FaceSpace:
         #for i in range( self.eigenface_basis[0 , :].size ):
         #    showImage( self.eigenface_basis[:, i] )
 
-    def centerData(self, images):
+    def centerData(self, data):
         if (self.centroid == None):
-            centroid = self.calculateCentroid(images)
+            centroid = self.calculateCentroid(data)
         else:
             centroid = self.centroid
-        return images - centroid
+        return data - centroid
 
-    def calculateCentroid(self, images):
-        number_of_images = images[0, :].size
-        centroid = images.sum(axis=1) / number_of_images
+    def calculateCentroid(self, data):
+        number_of_data = data[0, :].size
+        centroid = data.sum(axis=1) / number_of_data
         self.centroid = centroid.reshape(centroid.size, 1)
         return self.centroid
 
