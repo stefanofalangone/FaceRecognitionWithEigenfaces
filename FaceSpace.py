@@ -17,11 +17,12 @@ class FaceSpace:
         AT_A = np.dot(self.training_set.T, self.training_set)
         U, D, V_T = np.linalg.svd(AT_A)
         #print("eigenvalues ", D)
-        eigenvectors = np.dot( self.training_set, V_T.T )
-
+        #eigenvectors = np.dot( self.training_set, V_T.T )
+        eigenvectors = V_T.T
+        eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i<19):
+        while(D[i] > self.threshold and i<9):
                 current_vector.append( eigenvectors[: , i] )
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])
@@ -31,6 +32,22 @@ class FaceSpace:
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
         #for i in range( self.eigenface_basis[0 , :].size ):
         #   showImage( self.eigenface_basis[:, i] )
+
+    def calculateEigenvectors(self, eigenvectors):
+        ret = []
+        for i in range( eigenvectors[0].size ):
+            v = np.array(eigenvectors[:, i])
+            print("v is ", v)
+            #sum = np.dot( eigenvectors[:, i].T , self.training_set.T )
+            sum = self.training_set * v
+            #print("sum before summing ", sum)
+            sum = np.sum(sum, axis = -1)
+            #print("sum is", sum)
+            ret.append(sum)
+        eigen = np.stack( ret, axis = -1 )
+        print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )
+
+        return eigen
 
     def projectTrainingSet(self):
         result = []
