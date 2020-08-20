@@ -78,11 +78,11 @@ class FaceSpace:
         return self.centroid
 
     def calculateCentroidForEachClass(self):
-        centroids_list = []
+        centroids_list = {}
         end = 0
         for i in range(1,len(self.training_set_labels)+1):
             start = end
             end = start + len(self.training_set_labels[i])
             data_ith_class = self.training_set_projection[:, start:end]
-            centroids_list.append(np.concatenate(self.calculateCentroid(data_ith_class)))
+            centroids_list[i] = np.concatenate(self.calculateCentroid(data_ith_class))
         self.centroid_per_classes = centroids_list
