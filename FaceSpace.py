@@ -53,7 +53,7 @@ class FaceSpace:
 
         for i in range( self.training_set[0, :].size ):
             diff = self.training_set_projection[: , 10] - self.training_set_projection[: , i]
-            print("distance 10 and i ", i,  np.square( np.dot(diff, diff)) )
+            print("distance 10 and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
 
 
     def projectData(self, image):
