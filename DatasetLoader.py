@@ -11,13 +11,15 @@ class DatasetLoader:
     height_images = 0
     training_set = None
     test_set = None
+    training_set_labels = None
+    test_set_labels = None
 
     def __init__(self, path="./dataset/"):
         print("create the dataset Loader\n")
         self.path = path
         self.setupDirectoryFormat(40, 10)
         self.setupImgFormat(92, 112)
-        self.training_set, self.test_set = self.extractTrainingsetTestset(70)
+        self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(70)
 
         #self.showImage(self.training_set[:,0])
 
@@ -33,6 +35,8 @@ class DatasetLoader:
     def extractTrainingsetTestset(self, trainingPercentage):
         training_set = []
         test_set = []
+        training_set_labels = {}
+        test_set_labels = {}
 
         data_list = [i for i in range(1, self.n_images_per_directory+1)]
         number_of_training_images_per_directories = int((self.n_images_per_directory * trainingPercentage)/100)
@@ -41,6 +45,8 @@ class DatasetLoader:
         for i in range(1, self.n_directories+1):
             test_list = random.sample(data_list, number_of_testing_images_per_directories)
             train_list = list(set(data_list) - set(test_list))
+            training_set_labels[i] = train_list
+            test_set_labels[i] = test_list
             path = self.path + 's'+str(i)+'/'
 
             for j in train_list:
@@ -49,7 +55,7 @@ class DatasetLoader:
             for k in test_list:
                 test_set.append(self.readPgm(path+str(k)+'.pgm'))
 
-        return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1)
+        return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1), training_set_labels, test_set_labels
 
 
         vectorialized_image = []
@@ -81,3 +87,8 @@ class DatasetLoader:
     def getTestSet(self):
         return self.test_set
 
+    def getTrainingSetLabels(self):
+        return  self.training_set_labels
+
+    def getTestSetLabels(self):
+        return  self.test_set_labels
