@@ -27,6 +27,7 @@ class FaceSpace:
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])
                 i = i + 1
+        print("i is ", i)
         self.eigenface_basis = np.stack(current_vector, axis = -1)
 
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
@@ -40,7 +41,6 @@ class FaceSpace:
             ret.append(sum)
         eigen = np.stack( ret, axis = -1 )
         print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )
-        print("eigen ", eigen)
         return eigen
 
     def projectTrainingSet(self):
@@ -48,13 +48,12 @@ class FaceSpace:
         for i in range(self.training_set[0, :].size):
             result.append(self.projectData(self.training_set[:, i]))
         self.training_set_projection = np.stack(result, axis = -1)
-        print("training set projection first image ", self.training_set_projection[: , 0])
-        print("training set projection 4 image ", self.training_set_projection[: , 3])
 
         for i in range( self.training_set[0, :].size ):
-            diff = self.training_set_projection[: , 10] - self.training_set_projection[: , i]
-            print("distance 10 and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
-
+            image_chosen = 14
+            diff = self.training_set_projection[ : , image_chosen ] - self.training_set_projection[: , i]
+            print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
+        showImage( self.training_set[:, image_chosen] )
 
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)

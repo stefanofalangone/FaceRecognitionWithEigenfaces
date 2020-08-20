@@ -10,7 +10,8 @@ print("training set imgs ", training_set[0, :].size)
 print("test set imgs ", test_set[0, :].size)
 face_space = FaceSpace(training_set)
 
-showImage(face_space.eigenface_basis[:, 0])
+for i in range(20):
+    #showImage(face_space.eigenface_basis[:, i])
 """print("row 2", training_set[1, :])
 print("sum is ", np.sum(training_set[1, :])/10.0 )
 print("centroid element ", face_space.centroid[1])
