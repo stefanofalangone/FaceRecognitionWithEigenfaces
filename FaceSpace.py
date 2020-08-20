@@ -22,7 +22,7 @@ class FaceSpace:
         eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i<9):
+        while(D[i] > self.threshold and i<279):
                 current_vector.append( eigenvectors[: , i] )
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])
@@ -37,16 +37,12 @@ class FaceSpace:
         ret = []
         for i in range( eigenvectors[0].size ):
             v = np.array(eigenvectors[:, i])
-            print("v is ", v)
-            #sum = np.dot( eigenvectors[:, i].T , self.training_set.T )
             sum = self.training_set * v
-            #print("sum before summing ", sum)
             sum = np.sum(sum, axis = -1)
-            #print("sum is", sum)
             ret.append(sum)
         eigen = np.stack( ret, axis = -1 )
         print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )
-
+        print("eigen ", eigen)
         return eigen
 
     def projectTrainingSet(self):
@@ -56,12 +52,18 @@ class FaceSpace:
         self.training_set_projection = np.stack(result, axis = -1)
         print("training set projection ", self.training_set_projection)
         print("training set projection first image ", self.training_set_projection[: , 0])
+        print("training set projection 4 image ", self.training_set_projection[: , 3])
+
+        for i in range( self.training_set[0, :].size ):
+            diff = self.training_set_projection[: , 10] - self.training_set_projection[: , i]
+            print("distance 10 and i ", i,  np.square( np.dot(diff, diff)) )
+
         for i in range(self.training_set[0, :].size):
 
             #dot = np.dot(self.training_set_projection[: , i]  , self.eigenface_basis.T  )
             dot = np.dot(self.training_set_projection.T  , self.eigenface_basis.T  )
-            #dot = dot / np.linalg.norm(dot)
-            #distance = np.linalg.norm(self.training_set[:, 0] - dot)
+            dot = dot / np.linalg.norm(dot)
+            distance = np.linalg.norm(self.training_set[:, 0] - dot)
             #print("image of training ", i, "distance is ", distance)
         #showImage(self.training_set[:, 0])
         #showImage(dot)
