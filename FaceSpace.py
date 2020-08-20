@@ -30,8 +30,6 @@ class FaceSpace:
         self.eigenface_basis = np.stack(current_vector, axis = -1)
 
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
-        #for i in range( self.eigenface_basis[0 , :].size ):
-        #   showImage( self.eigenface_basis[:, i] )
 
     def calculateEigenvectors(self, eigenvectors):
         ret = []
@@ -50,7 +48,6 @@ class FaceSpace:
         for i in range(self.training_set[0, :].size):
             result.append(self.projectData(self.training_set[:, i]))
         self.training_set_projection = np.stack(result, axis = -1)
-        print("training set projection ", self.training_set_projection)
         print("training set projection first image ", self.training_set_projection[: , 0])
         print("training set projection 4 image ", self.training_set_projection[: , 3])
 
@@ -58,15 +55,6 @@ class FaceSpace:
             diff = self.training_set_projection[: , 10] - self.training_set_projection[: , i]
             print("distance 10 and i ", i,  np.square( np.dot(diff, diff)) )
 
-        for i in range(self.training_set[0, :].size):
-
-            #dot = np.dot(self.training_set_projection[: , i]  , self.eigenface_basis.T  )
-            dot = np.dot(self.training_set_projection.T  , self.eigenface_basis.T  )
-            dot = dot / np.linalg.norm(dot)
-            distance = np.linalg.norm(self.training_set[:, 0] - dot)
-            #print("image of training ", i, "distance is ", distance)
-        #showImage(self.training_set[:, 0])
-        #showImage(dot)
 
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)
