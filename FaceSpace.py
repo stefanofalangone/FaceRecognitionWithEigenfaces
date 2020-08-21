@@ -16,8 +16,6 @@ class FaceSpace:
         self.projectTrainingSet()
         self.calculateCentroidForEachClass()
 
-        print(self.centroid_per_classes[5])
-
     def computeEigenfaceBasis(self):
         AT_A = np.dot(self.training_set.T, self.training_set)
         U, D, V_T = np.linalg.svd(AT_A)
@@ -64,45 +62,57 @@ class FaceSpace:
             result.append(self.projectData(self.training_set[:, i]))
         self.training_set_projection = np.stack(result, axis = -1)
 
-
+    def calculateTestsetAccuracy(self, test_set, test_set_labels):
+        correct_predictions = 0
+        total = 0
+        correct_class = 0
+        for i in range( test_set[0, :].size ):
+            prediction = self.testImageRecognition(test_set[:, i])
+            if i%3 == 0: correct_class = correct_class + 1
+            print("prediction for image i of test = ", i, "is ", prediction, "correct class is ", correct_class)
+            if correct_class == prediction: correct_predictions = correct_predictions + 1
+            total = total + 1
+        print("correct prediction / total ", correct_predictions/total)
 
     def testImageRecognition(self, input_image):
       image_chosen = 0
+      #print("input image  shape ", np.shape(input_image) )
+      #print("centroid  shape ", np.shape(self.centroid) )
+      input_image = input_image.reshape(input_image.size , 1)
+      input_image = ( input_image - self.centroid )
+      #print("input image after centroid shape ", np.shape(input_image) )
+      #print("input image dimension ", self.centroid , "input image ", input_image.size )
       cluster_similarity = np.zeros( len(self.centroid_per_classes) )
+      image_0 = np.asarray( self.projectData(input_image) ).reshape(-1)
+
+      #print("input image projected in face space shape ", np.shape(image_0))
       for i in range( 1, len(self.centroid_per_classes)+1 ):
-          #image_0 = self.training_set_projection[:, image_chosen]
-          image_0 = self.projectData(input_image)
-          # image_i = self.training_set_projection[: , i]
           cluster_i = self.centroid_per_classes[i]
-          # print("image 0: ", image_0)
-          # print("image ", i, image_i)
-          diff = image_0 - cluster_i
+          #print("cluster_i shape in facespace ", np.shape(cluster_i))
+          #diff = image_0 - cluster_i
           cosine = np.dot(image_0, cluster_i) / (np.linalg.norm(image_0) * np.linalg.norm(cluster_i))
           cluster_similarity [i-1] = cosine
           # print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
-          print("cosine ", image_chosen, " and i ", i, cosine)
+          #print("cosine ", image_chosen, " and i ", i, cosine)
       n = 3
       indices = (-cluster_similarity).argsort()[:n] + 1
       print("most likely clusters: ", indices)
       # print(self.training_set_projection[:, 0].size)
       """for i in range(image_chosen, image_chosen+14):
           showImage( self.training_set[:, i] )"""
-
+      return indices[0]
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)
 
     def centerData(self, data):
         if (self.centroid == None):
-            centroid = self.calculateCentroid(data)
-        else:
-            centroid = self.centroid
-        return data - centroid
+            self.centroid = self.calculateCentroid(data)
+        return data - self.centroid
 
     def calculateCentroid(self, data):
         number_of_data = data[0, :].size
         centroid = data.sum(axis=1) / number_of_data
-        self.centroid = centroid.reshape(centroid.size, 1)
-        return self.centroid
+        return centroid.reshape(centroid.size, 1)
 
     def calculateCentroidForEachClass(self):
         centroids_list = {}
