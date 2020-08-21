@@ -41,22 +41,22 @@ class FaceSpace:
         Determine linear combination of the M training set face images to form the eigenfaces
     """
     def calculateEigenvectors(self, eigenvectors):
-        ret = []
+        """ret = []
         for i in range( eigenvectors[0].size ):
             v = np.array(eigenvectors[:, i])
             sum = self.training_set * v
             sum = np.sum(sum, axis = -1)
             ret.append(sum)
-        eigen = np.stack( ret, axis = -1 )
+        eigen = np.stack( ret, axis = -1 )"""
         eigen2 = np.dot(self.training_set, eigenvectors)
-        print("are the two eigens equal? ", np.array_equiv(eigen, eigen2))
+        """print("are the two eigens equal? ", np.array_equiv(eigen, eigen2))
         print("are the two eigens close? ", np.allclose(eigen, eigen2))
         print("FIRST EIGEN:")
         print(eigen[:, :])
         print("SECOND EIGEN")
         print(eigen2[:, :])
-        print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )
-        return eigen
+        print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )"""
+        return eigen2
 
     def projectTrainingSet(self):
         result = []
@@ -64,12 +64,29 @@ class FaceSpace:
             result.append(self.projectData(self.training_set[:, i]))
         self.training_set_projection = np.stack(result, axis = -1)
 
-        for i in range( self.training_set[0, :].size ):
-            image_chosen = 14
-            diff = self.training_set_projection[ : , image_chosen ] - self.training_set_projection[: , i]
-            #print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
-        #print(self.training_set_projection[:, 0].size)
-        #showImage( self.training_set[:, image_chosen] )
+
+
+    def testImageRecognition(self, input_image):
+      image_chosen = 0
+      cluster_similarity = np.zeros( len(self.centroid_per_classes) )
+      for i in range( 1, len(self.centroid_per_classes)+1 ):
+          #image_0 = self.training_set_projection[:, image_chosen]
+          image_0 = self.projectData(input_image)
+          # image_i = self.training_set_projection[: , i]
+          cluster_i = self.centroid_per_classes[i]
+          # print("image 0: ", image_0)
+          # print("image ", i, image_i)
+          diff = image_0 - cluster_i
+          cosine = np.dot(image_0, cluster_i) / (np.linalg.norm(image_0) * np.linalg.norm(cluster_i))
+          cluster_similarity [i-1] = cosine
+          # print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
+          print("cosine ", image_chosen, " and i ", i, cosine)
+      n = 3
+      indices = (-cluster_similarity).argsort()[:n] + 1
+      print("most likely clusters: ", indices)
+      # print(self.training_set_projection[:, 0].size)
+      """for i in range(image_chosen, image_chosen+14):
+          showImage( self.training_set[:, i] )"""
 
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)

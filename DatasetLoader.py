@@ -79,7 +79,7 @@ class DatasetLoader:
                 vectorialized_image.append(ord(pgmf.read(1)))
         pgmf.close()
 
-        return np.array(vectorialized_image, dtype='float')/255.0
+        return np.array(vectorialized_image, dtype='float')
 
     def getTrainingSet(self):
         return self.training_set
