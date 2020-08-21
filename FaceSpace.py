@@ -4,6 +4,7 @@ from Utility import showImage
 class FaceSpace:
 
     threshold = 10**-3
+    error_projection_threshold = 1.30*(10**25)
     eigenface_basis = None
     centroid = None
     centroid_per_classes = None
@@ -25,7 +26,7 @@ class FaceSpace:
         eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i<279):
+        while(D[i] > self.threshold and i<150):
                 current_vector.append( eigenvectors[: , i] )
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])
@@ -68,7 +69,7 @@ class FaceSpace:
         correct_class = 0
         for i in range( test_set[0, :].size ):
             prediction = self.testImageRecognition(test_set[:, i])
-            if i%3 == 0: correct_class = correct_class + 1
+            if i%1 == 0: correct_class = correct_class + 1
             print("prediction for image i of test = ", i, "is ", prediction, "correct class is ", correct_class)
             if correct_class == prediction: correct_predictions = correct_predictions + 1
             total = total + 1
@@ -101,6 +102,19 @@ class FaceSpace:
       """for i in range(image_chosen, image_chosen+14):
           showImage( self.training_set[:, i] )"""
       return indices[0]
+
+    def testFaceDetection(self, input_image):
+        input_image = input_image.reshape(input_image.size, 1)
+        input_image = input_image - self.centroid
+        eigenface_pattern_vectors = np.asarray( self.projectData(input_image) ).reshape(-1)
+        image_projected = np.dot(self.eigenface_basis, eigenface_pattern_vectors)
+        image_projected = image_projected.reshape((image_projected.size, 1))
+        difference = input_image - image_projected
+        projection_error_square = np.linalg.norm(difference)**2
+
+        print("Projection Error Square: ", projection_error_square)
+        return projection_error_square < self.error_projection_threshold
+
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)
 

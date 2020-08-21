@@ -19,7 +19,7 @@ class DatasetLoader:
         self.path = path
         self.setupDirectoryFormat(40, 10)
         self.setupImgFormat(92, 112)
-        self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(70)
+        self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(90)
 
         #self.showImage(self.training_set[:,0])
 
