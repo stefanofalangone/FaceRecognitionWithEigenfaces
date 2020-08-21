@@ -37,6 +37,9 @@ class FaceSpace:
 
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
 
+    """
+        Determine linear combination of the M training set face images to form the eigenfaces
+    """
     def calculateEigenvectors(self, eigenvectors):
         ret = []
         for i in range( eigenvectors[0].size ):
@@ -45,6 +48,13 @@ class FaceSpace:
             sum = np.sum(sum, axis = -1)
             ret.append(sum)
         eigen = np.stack( ret, axis = -1 )
+        eigen2 = np.dot(self.training_set, eigenvectors)
+        print("are the two eigens equal? ", np.array_equiv(eigen, eigen2))
+        print("are the two eigens close? ", np.allclose(eigen, eigen2))
+        print("FIRST EIGEN:")
+        print(eigen[:, :])
+        print("SECOND EIGEN")
+        print(eigen2[:, :])
         print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )
         return eigen
 
