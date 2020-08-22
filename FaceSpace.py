@@ -67,11 +67,10 @@ class FaceSpace:
         correct_predictions_cosine = 0
         correct_predictions_euclidean = 0
         total = 0
-        correct_class = 0
         for i in range( test_set[0, :].size ):
             prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
             prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])
-            if i%2 == 0: correct_class = correct_class + 1
+            correct_class = test_set_labels[i]
             print("prediction for image i of test = ", i, "is ", prediction_cosine, "correct class is ", correct_class)
             if correct_class == prediction_cosine: correct_predictions_cosine = correct_predictions_cosine + 1
             if correct_class == prediction_euclidean: correct_predictions_euclidean = correct_predictions_euclidean + 1
@@ -156,9 +155,9 @@ class FaceSpace:
     def calculateCentroidForEachClass(self):
         centroids_list = {}
         end = 0
-        for i in range(1,len(self.training_set_labels)+1):
+        for i in range(1, max(self.training_set_labels)+1):
             start = end
-            end = start + len(self.training_set_labels[i])
+            end = start + self.training_set_labels.count(i)
             data_ith_class = self.training_set_projection[:, start:end]
             centroids_list[i] = np.concatenate(self.calculateCentroid(data_ith_class))
         self.centroid_per_classes = centroids_list

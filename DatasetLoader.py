@@ -1,6 +1,7 @@
 
 import numpy as np
 import random
+import os
 
 class DatasetLoader:
 
@@ -35,36 +36,35 @@ class DatasetLoader:
     def extractTrainingsetTestset(self, trainingPercentage):
         training_set = []
         test_set = []
-        training_set_labels = {}
-        test_set_labels = {}
-
-        data_list = [i for i in range(1, self.n_images_per_directory+1)]
-        number_of_training_images_per_directories = int((self.n_images_per_directory * trainingPercentage)/100)
-        number_of_testing_images_per_directories = self.n_images_per_directory - number_of_training_images_per_directories
+        training_set_labels = []
+        test_set_labels = []
 
         for i in range(1, self.n_directories+1):
+            path = self.path + 's'+str(i)+'/'
+            n_images_per_directory = self.computeNumberOfImagesPerDirectory(path)
+            data_list = [i for i in range(1, n_images_per_directory + 1)]
+            number_of_training_images_per_directories = int((n_images_per_directory * trainingPercentage) / 100)
+            number_of_testing_images_per_directories = n_images_per_directory - number_of_training_images_per_directories
             test_list = random.sample(data_list, number_of_testing_images_per_directories)
             train_list = list(set(data_list) - set(test_list))
-            training_set_labels[i] = train_list
-            test_set_labels[i] = test_list
-            path = self.path + 's'+str(i)+'/'
 
             for j in train_list:
                 training_set.append(self.readPgm(path+str(j)+'.pgm'))
+                training_set_labels.append(i)
 
             for k in test_list:
                 test_set.append(self.readPgm(path+str(k)+'.pgm'))
+                test_set_labels.append(i)
 
         return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1), training_set_labels, test_set_labels
 
 
-        vectorialized_image = []
-        for k in range(height):
-            for j in range(width):
-                vectorialized_image.append(ord(pgmf.read(1)))
-
-        return np.array(vectorialized_image, dtype='float')
-
+    def computeNumberOfImagesPerDirectory(self, path):
+        counter = 0
+        for filename in os.listdir(path):
+            if( filename.endswith(".pgm") ):
+                counter = counter + 1
+        return counter
 
     def readPgm(self, path):
         pgmf = open(path, 'rb')
