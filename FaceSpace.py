@@ -76,32 +76,36 @@ class FaceSpace:
         print("correct prediction / total ", correct_predictions/total)
 
     def testImageRecognition(self, input_image):
-      image_chosen = 0
-      #print("input image  shape ", np.shape(input_image) )
-      #print("centroid  shape ", np.shape(self.centroid) )
-      input_image = input_image.reshape(input_image.size , 1)
-      input_image = ( input_image - self.centroid )
-      #print("input image after centroid shape ", np.shape(input_image) )
-      #print("input image dimension ", self.centroid , "input image ", input_image.size )
-      cluster_similarity = np.zeros( len(self.centroid_per_classes) )
-      image_0 = np.asarray( self.projectData(input_image) ).reshape(-1)
-
-      #print("input image projected in face space shape ", np.shape(image_0))
-      for i in range( 1, len(self.centroid_per_classes)+1 ):
-          cluster_i = self.centroid_per_classes[i]
-          #print("cluster_i shape in facespace ", np.shape(cluster_i))
-          #diff = image_0 - cluster_i
-          cosine = np.dot(image_0, cluster_i) / (np.linalg.norm(image_0) * np.linalg.norm(cluster_i))
-          cluster_similarity [i-1] = cosine
-          # print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
-          #print("cosine ", image_chosen, " and i ", i, cosine)
-      n = 3
-      indices = (-cluster_similarity).argsort()[:n] + 1
-      print("most likely clusters: ", indices)
-      # print(self.training_set_projection[:, 0].size)
-      """for i in range(image_chosen, image_chosen+14):
+        cluster_similarity = self.computeDistanceFromEachClass(input_image)
+        n = 3
+        indices = (-cluster_similarity).argsort()[:n] + 1
+        print("most likely clusters: ", indices)
+        # print(self.training_set_projection[:, 0].size)
+        """for i in range(image_chosen, image_chosen+14):
           showImage( self.training_set[:, i] )"""
-      return indices[0]
+        return indices[0]
+
+    def computeDistanceFromEachClass(self, input_image):
+        image_chosen = 0
+        # print("input image  shape ", np.shape(input_image) )
+        # print("centroid  shape ", np.shape(self.centroid) )
+        input_image = input_image.reshape(input_image.size, 1)
+        input_image = (input_image - self.centroid)
+        # print("input image after centroid shape ", np.shape(input_image) )
+        # print("input image dimension ", self.centroid , "input image ", input_image.size )
+        cluster_similarity = np.zeros(len(self.centroid_per_classes))
+        image_0 = np.asarray(self.projectData(input_image)).reshape(-1)
+
+        # print("input image projected in face space shape ", np.shape(image_0))
+        for i in range(1, len(self.centroid_per_classes) + 1):
+            cluster_i = self.centroid_per_classes[i]
+            # print("cluster_i shape in facespace ", np.shape(cluster_i))
+            # diff = image_0 - cluster_i
+            cosine = np.dot(image_0, cluster_i) / (np.linalg.norm(image_0) * np.linalg.norm(cluster_i))
+            cluster_similarity[i - 1] = cosine
+            # print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
+            # print("cosine ", image_chosen, " and i ", i, cosine)
+        return cluster_similarity
 
     def testFaceDetection(self, input_image):
         projection_error_square = self.computeProjectionErrorSquare(input_image)

@@ -19,7 +19,7 @@ random_image = createRandomImage(10304)
 print(image_without_face_255)
 print(random_image)
 print(face_space.findMaximumProjectionError(training_set))
-#face_space.testImageRecognition(test_set[:, 0])
+face_space.testImageRecognition(test_set[:, 0])
 result = face_space.testFaceDetection(test_set[:, 36])
 #face_space.calculateTestsetAccuracy(test_set, test_set_labels)
 
