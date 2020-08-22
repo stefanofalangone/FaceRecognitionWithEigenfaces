@@ -4,9 +4,6 @@ from Utility import showImage
 from Utility import createRandomImage
 import numpy as np
 
-"""a = np.arange(3)
-print(np.linalg.norm(a)**2)"""
-
 dataset = DatasetLoader()
 training_set = dataset.getTrainingSet()
 test_set = dataset.getTestSet()
