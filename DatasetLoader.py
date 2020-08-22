@@ -19,7 +19,7 @@ class DatasetLoader:
         self.path = path
         self.setupDirectoryFormat(40, 10)
         self.setupImgFormat(92, 112)
-        self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(90)
+        self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(80)
 
         #self.showImage(self.training_set[:,0])
 
@@ -79,7 +79,7 @@ class DatasetLoader:
                 vectorialized_image.append(ord(pgmf.read(1)))
         pgmf.close()
 
-        return np.array(vectorialized_image, dtype='float')
+        return np.array(vectorialized_image, dtype='float')/255.0
 
     def getTrainingSet(self):
         return self.training_set

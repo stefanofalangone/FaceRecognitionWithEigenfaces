@@ -26,7 +26,7 @@ class FaceSpace:
         eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i<150):
+        while(D[i] > self.threshold and i< self.training_set[0 , :].size ):
                 current_vector.append( eigenvectors[: , i] )
                 #print("division is ", D[i] / D[ D.size - 1 ])
                 #print("D[i] and last are ", D[i], D[ D.size - 1 ])
@@ -64,53 +64,62 @@ class FaceSpace:
         self.training_set_projection = np.stack(result, axis = -1)
 
     def calculateTestsetAccuracy(self, test_set, test_set_labels):
-        correct_predictions = 0
+        correct_predictions_cosine = 0
+        correct_predictions_euclidean = 0
         total = 0
         correct_class = 0
         for i in range( test_set[0, :].size ):
-            prediction = self.testImageRecognition(test_set[:, i])
-            if i%1 == 0: correct_class = correct_class + 1
-            print("prediction for image i of test = ", i, "is ", prediction, "correct class is ", correct_class)
-            if correct_class == prediction: correct_predictions = correct_predictions + 1
+            prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
+            prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])
+            if i%2 == 0: correct_class = correct_class + 1
+            print("prediction for image i of test = ", i, "is ", prediction_cosine, "correct class is ", correct_class)
+            if correct_class == prediction_cosine: correct_predictions_cosine = correct_predictions_cosine + 1
+            if correct_class == prediction_euclidean: correct_predictions_euclidean = correct_predictions_euclidean + 1
             total = total + 1
-        print("correct prediction / total ", correct_predictions/total)
+        print("COSINE correct prediction / total ", correct_predictions_cosine/total)
+        print("EUCLIDEAN correct prediction / total ", correct_predictions_cosine/total)
 
-    def testImageRecognition(self, input_image):
-        cluster_similarity = self.computeDistanceFromEachClass(input_image)
+    def testImageRecognitionWithCosine(self, input_image):
+        cluster_similarity = self.computeCosineSimilarityForEachClass(input_image)
         n = 3
         indices = (-cluster_similarity).argsort()[:n] + 1
-        print("most likely clusters: ", indices)
-        # print(self.training_set_projection[:, 0].size)
-        """for i in range(image_chosen, image_chosen+14):
-          showImage( self.training_set[:, i] )"""
+        print("[COSINE] most likely clusters: ", indices)
         return indices[0]
 
-    def computeDistanceFromEachClass(self, input_image):
-        image_chosen = 0
-        # print("input image  shape ", np.shape(input_image) )
-        # print("centroid  shape ", np.shape(self.centroid) )
+    def testImageRecognitionWithEuclideanDistance(self, input_image):
+        cluster_similarity = self.computeEuclideanDistanceForEachClass(input_image)
+        n = 3
+        indices = (cluster_similarity).argsort()[:n] + 1
+        print("[EUCLIDEAN] most likely clusters: ", indices)
+        return indices[0]
+
+    def computeCosineSimilarityForEachClass(self, input_image):
         input_image = input_image.reshape(input_image.size, 1)
         input_image = (input_image - self.centroid)
-        # print("input image after centroid shape ", np.shape(input_image) )
-        # print("input image dimension ", self.centroid , "input image ", input_image.size )
         cluster_similarity = np.zeros(len(self.centroid_per_classes))
         image_0 = np.asarray(self.projectData(input_image)).reshape(-1)
-
-        # print("input image projected in face space shape ", np.shape(image_0))
         for i in range(1, len(self.centroid_per_classes) + 1):
             cluster_i = self.centroid_per_classes[i]
-            # print("cluster_i shape in facespace ", np.shape(cluster_i))
-            # diff = image_0 - cluster_i
             cosine = np.dot(image_0, cluster_i) / (np.linalg.norm(image_0) * np.linalg.norm(cluster_i))
             cluster_similarity[i - 1] = cosine
-            # print("distance ", image_chosen, " and i ", i,  np.format_float_scientific( np.dot(diff, diff)) )
-            # print("cosine ", image_chosen, " and i ", i, cosine)
         return cluster_similarity
+
+    def computeEuclideanDistanceForEachClass(self, input_image):
+        input_image = input_image.reshape(input_image.size, 1)
+        input_image = (input_image - self.centroid)
+        cluster_distance = np.zeros(len(self.centroid_per_classes))
+        image_0 = np.asarray(self.projectData(input_image)).reshape(-1)
+        for i in range(1, len(self.centroid_per_classes) + 1):
+            cluster_i = self.centroid_per_classes[i]
+            diff = image_0 - cluster_i
+            distance = np.linalg.norm(diff)**2
+            cluster_distance[i - 1] = distance
+        return cluster_distance
 
     def testFaceDetection(self, input_image):
         projection_error_square = self.computeProjectionErrorSquare(input_image)
 
-        print("Projection Error Square: ", projection_error_square)
+        print("Projection Error Square: ", np.format_float_scientific(projection_error_square))
         return projection_error_square < self.error_projection_threshold
 
     def computeProjectionErrorSquare(self, input_image):
@@ -128,6 +137,7 @@ class FaceSpace:
             image = set_of_images[:, i]
             projection_error_square = self.computeProjectionErrorSquare(image)
             errors_projection_list.append(projection_error_square)
+        self.error_projection_threshold = 1.3 * max(errors_projection_list)
         return max(errors_projection_list)
 
     def projectData(self, image):
