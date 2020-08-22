@@ -1,6 +1,7 @@
 from DatasetLoader import DatasetLoader
 from FaceSpace import FaceSpace
 from Utility import showImage
+from Utility import createRandomImage
 import numpy as np
 
 """a = np.arange(3)
@@ -14,10 +15,13 @@ test_set_labels = dataset.getTestSetLabels()
 print("training set imgs ", training_set[0, :].size)
 print("test set imgs ", test_set[0, :].size)
 face_space = FaceSpace(training_set, training_set_labels)
+
 image_without_face_0 = np.zeros(10304)
 image_without_face_255 = np.ones(10304)*255
+random_image = createRandomImage(10304)
 print(image_without_face_255)
-
+print(random_image)
+print(face_space.findMaximumProjectionError(training_set))
 #face_space.testImageRecognition(test_set[:, 0])
 result = face_space.testFaceDetection(test_set[:, 36])
 #face_space.calculateTestsetAccuracy(test_set, test_set_labels)

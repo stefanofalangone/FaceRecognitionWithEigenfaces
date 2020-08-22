@@ -4,7 +4,7 @@ from Utility import showImage
 class FaceSpace:
 
     threshold = 10**-3
-    error_projection_threshold = 1.30*(10**25)
+    error_projection_threshold = 1.56*(10**25)
     eigenface_basis = None
     centroid = None
     centroid_per_classes = None
@@ -104,16 +104,27 @@ class FaceSpace:
       return indices[0]
 
     def testFaceDetection(self, input_image):
-        input_image = input_image.reshape(input_image.size, 1)
-        input_image = input_image - self.centroid
-        eigenface_pattern_vectors = np.asarray( self.projectData(input_image) ).reshape(-1)
-        image_projected = np.dot(self.eigenface_basis, eigenface_pattern_vectors)
-        image_projected = image_projected.reshape((image_projected.size, 1))
-        difference = input_image - image_projected
-        projection_error_square = np.linalg.norm(difference)**2
+        projection_error_square = self.computeProjectionErrorSquare(input_image)
 
         print("Projection Error Square: ", projection_error_square)
         return projection_error_square < self.error_projection_threshold
+
+    def computeProjectionErrorSquare(self, input_image):
+        input_image = input_image.reshape(input_image.size, 1)
+        input_image = input_image - self.centroid
+        eigenface_pattern_vectors = np.asarray(self.projectData(input_image)).reshape(-1)
+        image_projected = np.dot(self.eigenface_basis, eigenface_pattern_vectors)
+        image_projected = image_projected.reshape((image_projected.size, 1))
+        difference = input_image - image_projected
+        return np.linalg.norm(difference) ** 2
+
+    def findMaximumProjectionError(self, set_of_images):
+        errors_projection_list = []
+        for i in range(set_of_images[0, :].size):
+            image = set_of_images[:, i]
+            projection_error_square = self.computeProjectionErrorSquare(image)
+            errors_projection_list.append(projection_error_square)
+        return max(errors_projection_list)
 
     def projectData(self, image):
         return np.dot(self.eigenface_basis.T, image)
