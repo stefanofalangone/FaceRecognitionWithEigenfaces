@@ -5,6 +5,9 @@ from Utility import createRandomImage
 import numpy as np
 
 path_dataset_yale = "./datasetYale/Yale_Cropped_Dataset/"
+width_image = 168
+height_image = 192
+vectorial_image_size = width_image * height_image
 dataset = DatasetLoader( path_dataset_yale )
 training_set = dataset.getTrainingSet()
 test_set = dataset.getTestSet()
@@ -14,15 +17,15 @@ print("training set imgs ", training_set[0, :].size)
 print("test set imgs ", test_set[0, :].size)
 face_space = FaceSpace(training_set, training_set_labels)
 face_space.calculateTestsetAccuracy(test_set, test_set_labels)
-showImage(training_set[:,0], 112, 92)
+showImage(training_set[:,0], height_image, width_image)
 print("\nERROR thresold", np.format_float_scientific(face_space.findMaximumProjectionError(training_set)))
 print("error in 36 image test set", np.format_float_scientific(face_space.computeProjectionErrorSquare(test_set[:, 36])))
 
 #print("Does image contain a face? ", result)
 
-image_without_face_0 = np.zeros(10304)
-image_without_face_255 = np.ones(10304)*255
-random_image = createRandomImage(10304)
+image_without_face_0 = np.zeros(vectorial_image_size)
+image_without_face_255 = np.ones(vectorial_image_size)*255
+random_image = createRandomImage(vectorial_image_size)
 """showImage(image_without_face_0, 112, 92)
 showImage(image_without_face_255, 112, 92)
 showImage(random_image, 112, 92)"""
