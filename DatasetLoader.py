@@ -15,11 +15,11 @@ class DatasetLoader:
     training_set_labels = None
     test_set_labels = None
 
-    def __init__(self, path="./dataset/"):
+    def __init__(self, path="./dataset/", width_image=92, height_image=112, n_directories=40, n_images_per_directory=10):
         print("create the dataset Loader\n")
         self.path = path
-        self.setupDirectoryFormat(40, 10)
-        self.setupImgFormat(92, 112)
+        self.setupDirectoryFormat(n_directories, n_images_per_directory)
+        self.setupImgFormat(width_image, height_image)
         self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(80)
 
         #self.showImage(self.training_set[:,0], 112, 92)
@@ -40,6 +40,7 @@ class DatasetLoader:
         test_set_labels = []
 
         for i in range(1, self.n_directories+1):
+            opening_failed = False
             path = self.path + 's'+str(i)+'/'
             n_images_per_directory = self.computeNumberOfImagesPerDirectory(path)
             data_list = [i for i in range(1, n_images_per_directory + 1)]
@@ -47,14 +48,17 @@ class DatasetLoader:
             number_of_testing_images_per_directories = n_images_per_directory - number_of_training_images_per_directories
             test_list = random.sample(data_list, number_of_testing_images_per_directories)
             train_list = list(set(data_list) - set(test_list))
-
             for j in train_list:
-                training_set.append(self.readPgm(path+str(j)+'.pgm'))
-                training_set_labels.append(i)
+                vectorialized_image, opening_failed = self.readPgm(path+str(j)+'.pgm', j, i)
+                if(not opening_failed):
+                    training_set.append(vectorialized_image)
+                    training_set_labels.append(i)
 
             for k in test_list:
-                test_set.append(self.readPgm(path+str(k)+'.pgm'))
-                test_set_labels.append(i)
+                vectorialized_image, opening_failed = self.readPgm(path+str(k)+'.pgm', k, i)
+                if(not opening_failed):
+                    test_set.append(vectorialized_image)
+                    test_set_labels.append(i)
 
         return np.stack(training_set, axis=-1), np.stack(test_set, axis=-1), training_set_labels, test_set_labels
 
@@ -66,20 +70,25 @@ class DatasetLoader:
                 counter = counter + 1
         return counter
 
-    def readPgm(self, path):
+    def readPgm(self, path, number_of_image, number_of_diretory):
+        opening_failed = True
         pgmf = open(path, 'rb')
-        pgmf.readline()
-        width, height = [int(i) for i in pgmf.readline().split()]
-        max_val = int(pgmf.readline())
-        assert max_val <= 255
+        try:
+            magic_number = pgmf.readline()
+            width, height = [int(i) for i in pgmf.readline().split()]
+            max_val = int(pgmf.readline())
+            assert max_val <= 255
 
-        vectorialized_image = []
-        for k in range(height):
-            for j in range(width):
-                vectorialized_image.append(ord(pgmf.read(1)))
-        pgmf.close()
-
-        return np.array(vectorialized_image, dtype='float')/255.0
+            vectorialized_image = []
+            for k in range(height):
+                for j in range(width):
+                    vectorialized_image.append(ord(pgmf.read(1)))
+            pgmf.close()
+            opening_failed = False
+            return np.array(vectorialized_image, dtype='float') / 255.0, opening_failed
+        except:
+            print("Problemi con l'immagine ",number_of_image ,"della directory", number_of_diretory)
+            return np.zeros(self.width_images*self.height_images), opening_failed
 
     def getTrainingSet(self):
         return self.training_set
