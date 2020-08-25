@@ -4,7 +4,8 @@ from Utility import showImage
 from Utility import createRandomImage
 import numpy as np
 
-dataset = DatasetLoader()
+path_dataset_yale = "./datasetYale/Yale_Cropped_Dataset/"
+dataset = DatasetLoader( path_dataset_yale )
 training_set = dataset.getTrainingSet()
 test_set = dataset.getTestSet()
 training_set_labels = dataset.getTrainingSetLabels()
