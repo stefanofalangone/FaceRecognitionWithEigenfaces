@@ -22,7 +22,7 @@ class DatasetLoader:
         self.setupImgFormat(92, 112)
         self.training_set, self.test_set, self.training_set_labels, self.test_set_labels = self.extractTrainingsetTestset(80)
 
-        #self.showImage(self.training_set[:,0])
+        #self.showImage(self.training_set[:,0], 112, 92)
 
     def setupImgFormat(self, width_img=92, height_img=112):
         self.width_images = width_img

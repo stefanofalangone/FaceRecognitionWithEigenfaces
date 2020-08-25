@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def showImage( vectorialized_image ):
-    plt.imshow(vectorialized_image.reshape((112, 92)), cmap='gray')
+def showImage( vectorialized_image, height, width ):
+    plt.imshow(vectorialized_image.reshape((height, width)), cmap='gray')
     plt.show()
 
 def createRandomImage(size):
