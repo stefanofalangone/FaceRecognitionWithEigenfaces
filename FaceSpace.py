@@ -67,6 +67,7 @@ class FaceSpace:
         correct_predictions_cosine = 0
         correct_predictions_euclidean = 0
         total = 0
+        print("test set labels ", test_set_labels)
         for i in range( test_set[0, :].size ):
             prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
             prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])

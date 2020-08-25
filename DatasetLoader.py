@@ -43,10 +43,12 @@ class DatasetLoader:
             opening_failed = False
             path = self.path + 's'+str(i)+'/'
             n_images_per_directory = self.computeNumberOfImagesPerDirectory(path)
+            n_images_per_directory = 20
             data_list = [i for i in range(1, n_images_per_directory + 1)]
             number_of_training_images_per_directories = int((n_images_per_directory * trainingPercentage) / 100)
             number_of_testing_images_per_directories = n_images_per_directory - number_of_training_images_per_directories
             test_list = random.sample(data_list, number_of_testing_images_per_directories)
+            test_list = [17, 18, 19, 20]
             train_list = list(set(data_list) - set(test_list))
             for j in train_list:
                 vectorialized_image, opening_failed = self.readPgm(path+str(j)+'.pgm', j, i)

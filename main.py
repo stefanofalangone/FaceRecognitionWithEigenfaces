@@ -18,7 +18,10 @@ print("training set imgs ", training_set[0, :].size)
 print("test set imgs ", test_set[0, :].size)
 face_space = FaceSpace(training_set, training_set_labels)
 face_space.calculateTestsetAccuracy(test_set, test_set_labels)
-showImage(training_set[:,0], height_image, width_image)
+#for i in range( training_set[0, :].size ):
+#    showImage(training_set[:,i], height_image, width_image)
+for i in range( face_space.eigenface_basis[0, :].size ):
+    showImage( face_space.eigenface_basis[:,0], height_image, width_image)
 print("\nERROR thresold", np.format_float_scientific(face_space.findMaximumProjectionError(training_set)))
 print("error in 36 image test set", np.format_float_scientific(face_space.computeProjectionErrorSquare(test_set[:, 36])))
 
