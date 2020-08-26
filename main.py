@@ -23,17 +23,19 @@ face_space.calculateTestsetAccuracy(test_set, test_set_labels)
 #    showImage(training_set[:,i], height_image, width_image)
 """for i in range( face_space.eigenface_basis[0, :].size ):
     showImage( face_space.eigenface_basis[:,i], height_image, width_image)"""
-print("\nERROR thresold", np.format_float_scientific(face_space.findMaximumProjectionError(training_set)))
+#print("\nERROR thresold", np.format_float_scientific(face_space.findMaximumProjectionError(training_set)))
 #print("error in 36 image test set", np.format_float_scientific(face_space.computeProjectionErrorSquare(test_set[:, 36])))
 
 #print("Does image contain a face? ", result)
 
+
+"""
 image_without_face_0 = np.zeros(vectorial_image_size)
 image_without_face_255 = np.ones(vectorial_image_size)*255
 random_image = createRandomImage(vectorial_image_size)
-"""showImage(image_without_face_0, 112, 92)
+showImage(image_without_face_0, 112, 92)
 showImage(image_without_face_255, 112, 92)
-showImage(random_image, 112, 92)"""
+showImage(random_image, 112, 92)
 
 print("error committed on 0..0 image ", np.format_float_scientific(face_space.computeProjectionErrorSquare(random_image)))
 result = face_space.testFaceDetection(random_image)

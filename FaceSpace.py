@@ -22,7 +22,6 @@ class FaceSpace:
     def computeEigenfaceBasis(self):
         AT_A = np.dot(self.training_set.T, self.training_set)
         U, D, V_T = np.linalg.svd(AT_A)
-        print("eigenvalues ", D)
         #eigenvectors = np.dot( self.training_set, V_T.T )
         eigenvectors = V_T.T
         eigenvectors = self.calculateEigenvectors(eigenvectors)
@@ -55,8 +54,8 @@ class FaceSpace:
         total = 0
         print("test set labels ", test_set_labels)
         for i in range( test_set[0, :].size ):
-            prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
-            #prediction_cosine = self.testImageRecognitionWithKnn( test_set[:, i] )
+            #prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
+            prediction_cosine = self.testImageRecognitionWithKnn( test_set[:, i] )
             prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])
             correct_class = test_set_labels[i]
             print("prediction for image i of test = ", i, "is ", prediction_cosine, "correct class is ", correct_class)
@@ -64,29 +63,39 @@ class FaceSpace:
             if correct_class == prediction_euclidean: correct_predictions_euclidean = correct_predictions_euclidean + 1
             total = total + 1
         print("COSINE correct prediction / total ", correct_predictions_cosine/total)
-        print("EUCLIDEAN correct prediction / total ", correct_predictions_cosine/total)
+        print("EUCLIDEAN correct prediction / total ", correct_predictions_euclidean/total)
 
     def testImageRecognitionWithKnn(self, input_image):
         image_similarity = self.computeCosineSimilarityForEachImage(input_image)
+        print("image similarity knn ", image_similarity)
         knn = 5
-        indices = (-image_similarity).argsort()[:knn] + 1
+        indices = (-image_similarity).argsort()[:knn] + 1 #indices of images sorted by distance
         print("indices ", indices)
-        number_of_occurrences = Counter(indices)
+        classes = np.zeros( indices.size )
+        for i in range( indices.size ):
+            current_image = indices[i]
+            current_class = self.training_set_labels[ current_image - 1 ]
+            classes[i] = current_class
+
+        print("classes are ", classes)
+        number_of_occurrences = Counter(classes)
         print("Counter is", number_of_occurrences)
-        return indices[ number_of_occurrences[0] ]
+        prediction = list(number_of_occurrences.keys())[0]
+        print("prediction is ", prediction)
+        return prediction
 
     def testImageRecognitionWithCosine(self, input_image):
         cluster_similarity = self.computeCosineSimilarityForEachClass(input_image)
         n = 3
         indices = (-cluster_similarity).argsort()[:n] + 1
-        print("[COSINE] most likely clusters: ", indices)
+        #print("[COSINE] most likely clusters: ", indices)
         return indices[0]
 
     def testImageRecognitionWithEuclideanDistance(self, input_image):
         cluster_similarity = self.computeEuclideanDistanceForEachClass(input_image)
         n = 3
         indices = (cluster_similarity).argsort()[:n] + 1
-        print("[EUCLIDEAN] most likely clusters: ", indices)
+        #print("[EUCLIDEAN] most likely clusters: ", indices)
         return indices[0]
 
     def computeCosineSimilarityForEachClass(self, input_image):
