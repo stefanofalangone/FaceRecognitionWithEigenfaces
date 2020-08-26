@@ -5,9 +5,10 @@ from Utility import createRandomImage
 import numpy as np
 
 path_dataset_yale = "./datasetYale/Yale_Cropped_Dataset/"
+path_standard_dataset = "./dataset/"
 width_image = 168
 height_image = 192
-n_directories = 38
+n_directories = 40
 vectorial_image_size = width_image * height_image
 dataset = DatasetLoader( path_dataset_yale, width_image, height_image, n_directories )
 training_set = dataset.getTrainingSet()
