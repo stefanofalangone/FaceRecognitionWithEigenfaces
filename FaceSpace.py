@@ -67,21 +67,21 @@ class FaceSpace:
 
     def testImageRecognitionWithKnn(self, input_image):
         image_similarity = self.computeCosineSimilarityForEachImage(input_image)
-        print("image similarity knn ", image_similarity)
-        knn = 5
+        #print("image similarity knn ", image_similarity)
+        knn = 3
         indices = (-image_similarity).argsort()[:knn] + 1 #indices of images sorted by distance
-        print("indices ", indices)
+        #print("indices ", indices)
         classes = np.zeros( indices.size )
         for i in range( indices.size ):
             current_image = indices[i]
             current_class = self.training_set_labels[ current_image - 1 ]
             classes[i] = current_class
 
-        print("classes are ", classes)
+        #print("classes are ", classes)
         number_of_occurrences = Counter(classes)
-        print("Counter is", number_of_occurrences)
+        #print("Counter is", number_of_occurrences)
         prediction = list(number_of_occurrences.keys())[0]
-        print("prediction is ", prediction)
+        #print("prediction is ", prediction)
         return prediction
 
     def testImageRecognitionWithCosine(self, input_image):

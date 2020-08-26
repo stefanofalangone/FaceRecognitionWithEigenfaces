@@ -43,7 +43,7 @@ class DatasetLoader:
             opening_failed = False
             path = self.path + 's'+str(i)+'/'
             n_images_per_directory = self.computeNumberOfImagesPerDirectory(path)
-            #n_images_per_directory = 3
+            n_images_per_directory = 10
             data_list = [i for i in range(1, n_images_per_directory + 1)]
             number_of_training_images_per_directories = int((n_images_per_directory * trainingPercentage) / 100)
             number_of_testing_images_per_directories = n_images_per_directory - number_of_training_images_per_directories
