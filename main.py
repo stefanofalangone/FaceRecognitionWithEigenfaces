@@ -4,13 +4,13 @@ from Utility import showImage
 from Utility import createRandomImage
 import numpy as np
 
-path_dataset_yale = "./datasetYale/Yale_Cropped_Dataset/"
-path_standard_dataset = "./dataset/"
-width_image = 168
-height_image = 192
+path_dataset_yale = "./datasetYale/Yale_Cropped_Dataset/" #images are 168 x 192, 38 dir
+path_standard_dataset = "./dataset/" # images are 92 x 112, 40 dir
+width_image = 92
+height_image = 112
 n_directories = 40
 vectorial_image_size = width_image * height_image
-dataset = DatasetLoader( path_dataset_yale, width_image, height_image, n_directories )
+dataset = DatasetLoader( path_standard_dataset, width_image, height_image, n_directories )
 training_set = dataset.getTrainingSet()
 test_set = dataset.getTestSet()
 training_set_labels = dataset.getTrainingSetLabels()

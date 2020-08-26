@@ -28,10 +28,8 @@ class FaceSpace:
         eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
-        while(D[i] > self.threshold and i < 20 ):
+        while(D[i] > self.threshold and i < self.training_set[0, :].size ):
                 current_vector.append( eigenvectors[: , i] )
-                #print("division is ", D[i] / D[ D.size - 1 ])
-                #print("D[i] and last are ", D[i], D[ D.size - 1 ])
                 i = i + 1
         self.eigenface_basis = np.stack(current_vector, axis = -1)
         print("NUMBER OF AUTOVECTORS is ", self.eigenface_basis[0, :].size , "number of images ", self.training_set[0, :].size )
@@ -42,22 +40,8 @@ class FaceSpace:
         Determine linear combination of the M training set face images to form the eigenfaces
     """
     def calculateEigenvectors(self, eigenvectors):
-        """ret = []
-        for i in range( eigenvectors[0].size ):
-            v = np.array(eigenvectors[:, i])
-            sum = self.training_set * v
-            sum = np.sum(sum, axis = -1)
-            ret.append(sum)
-        eigen = np.stack( ret, axis = -1 )"""
-        eigen2 = np.dot(self.training_set, eigenvectors)
-        """print("are the two eigens equal? ", np.array_equiv(eigen, eigen2))
-        print("are the two eigens close? ", np.allclose(eigen, eigen2))
-        print("FIRST EIGEN:")
-        print(eigen[:, :])
-        print("SECOND EIGEN")
-        print(eigen2[:, :])
-        print("eigen dimensions: rows ", eigen[:, 0].size, "cols:", eigen[0].size )"""
-        return eigen2
+        eigen = np.dot(self.training_set, eigenvectors)
+        return eigen
 
     def projectTrainingSet(self):
         result = []
@@ -72,7 +56,7 @@ class FaceSpace:
         print("test set labels ", test_set_labels)
         for i in range( test_set[0, :].size ):
             prediction_cosine = self.testImageRecognitionWithCosine(test_set[:, i])
-            prediction_cosine = self.testImageRecognitionWithKnn( test_set[:, i] )
+            #prediction_cosine = self.testImageRecognitionWithKnn( test_set[:, i] )
             prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])
             correct_class = test_set_labels[i]
             print("prediction for image i of test = ", i, "is ", prediction_cosine, "correct class is ", correct_class)
