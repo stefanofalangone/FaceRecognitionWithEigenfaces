@@ -66,10 +66,10 @@ class FaceSpace:
         print("EUCLIDEAN correct prediction / total ", correct_predictions_euclidean/total)
 
     def testImageRecognitionWithKnn(self, input_image):
-        image_similarity = self.computeCosineSimilarityForEachImage(input_image)
+        image_similarity = self.computeEuclideanDistanceForEachImage(input_image)
         #print("image similarity knn ", image_similarity)
-        knn = 3
-        indices = (-image_similarity).argsort()[:knn] + 1 #indices of images sorted by distance
+        knn = 5
+        indices = (image_similarity).argsort()[:knn] + 1 #indices of images sorted by cosine similarity
         #print("indices ", indices)
         classes = np.zeros( indices.size )
         for i in range( indices.size ):
@@ -120,6 +120,18 @@ class FaceSpace:
             image_i = self.training_set_projection[:, i - 1]
             cosine = np.dot(image_0, image_i) / (np.linalg.norm(image_0) * np.linalg.norm(image_i))
             image_similarity[i - 1] = cosine
+        return image_similarity
+
+    def computeEuclideanDistanceForEachImage(self, input_image):
+        input_image = input_image.reshape(input_image.size, 1)
+        input_image = (input_image - self.centroid)
+        image_similarity = np.zeros(len(self.training_set[0, :]))
+        image_0 = np.asarray(self.projectData(input_image)).reshape(-1)
+        for i in range(1, len(self.training_set[0, :]) + 1):
+            image_i = self.training_set_projection[:, i - 1]
+            diff = image_0 - image_i
+            distance = np.linalg.norm(diff)**2
+            image_similarity[i - 1] = distance
         return image_similarity
 
     def computeEuclideanDistanceForEachClass(self, input_image):
