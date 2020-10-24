@@ -31,9 +31,8 @@ class FaceSpace:
                 current_vector.append( eigenvectors[: , i] )
                 i = i + 1
         self.eigenface_basis = np.stack(current_vector, axis = -1)
-        print("NUMBER OF AUTOVECTORS is ", self.eigenface_basis[0, :].size , "number of images ", self.training_set[0, :].size )
 
-        print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
+        #print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
 
     """
         Determine linear combination of the M training set face images to form the eigenfaces
@@ -58,44 +57,40 @@ class FaceSpace:
             prediction_cosine = self.testImageRecognitionWithKnn( test_set[:, i] )
             prediction_euclidean = self.testImageRecognitionWithEuclideanDistance(test_set[:, i])
             correct_class = test_set_labels[i]
-            print("prediction for image i of test = ", i, "is ", prediction_cosine, "correct class is ", correct_class)
+            print("prediction for image i of test", i, "is", prediction_cosine, "correct class is", correct_class)
             if correct_class == prediction_cosine: correct_predictions_cosine = correct_predictions_cosine + 1
             if correct_class == prediction_euclidean: correct_predictions_euclidean = correct_predictions_euclidean + 1
             total = total + 1
-        print("COSINE correct prediction / total ", correct_predictions_cosine/total)
-        print("EUCLIDEAN correct prediction / total ", correct_predictions_euclidean/total)
+        print("KNN correct prediction / total ", correct_predictions_cosine/total)
+        print("Cluster/Rocchio correct prediction / total ", correct_predictions_euclidean/total)
 
     def testImageRecognitionWithKnn(self, input_image):
         image_similarity = self.computeEuclideanDistanceForEachImage(input_image)
-        #print("image similarity knn ", image_similarity)
         knn = 5
+        #print("min distance is ", min(image_similarity), "threshold is ", self.error_projection_threshold)
+        if min(image_similarity) > self.error_projection_threshold:
+            print("IMAGE IS UNKNOWN")
         indices = (image_similarity).argsort()[:knn] + 1 #indices of images sorted by cosine similarity
-        #print("indices ", indices)
         classes = np.zeros( indices.size )
         for i in range( indices.size ):
             current_image = indices[i]
             current_class = self.training_set_labels[ current_image - 1 ]
             classes[i] = current_class
 
-        #print("classes are ", classes)
         number_of_occurrences = Counter(classes)
-        #print("Counter is", number_of_occurrences)
         prediction = list(number_of_occurrences.keys())[0]
-        #print("prediction is ", prediction)
         return prediction
 
     def testImageRecognitionWithCosine(self, input_image):
         cluster_similarity = self.computeCosineSimilarityForEachClass(input_image)
         n = 3
         indices = (-cluster_similarity).argsort()[:n] + 1
-        #print("[COSINE] most likely clusters: ", indices)
         return indices[0]
 
     def testImageRecognitionWithEuclideanDistance(self, input_image):
         cluster_similarity = self.computeEuclideanDistanceForEachClass(input_image)
         n = 3
         indices = (cluster_similarity).argsort()[:n] + 1
-        #print("[EUCLIDEAN] most likely clusters: ", indices)
         return indices[0]
 
     def computeCosineSimilarityForEachClass(self, input_image):
@@ -167,7 +162,7 @@ class FaceSpace:
             image = set_of_images[:, i]
             projection_error_square = self.computeProjectionErrorSquare(image)
             errors_projection_list.append(projection_error_square)
-        self.error_projection_threshold = 1.3 * max(errors_projection_list)
+        self.error_projection_threshold = 1.0 * max(errors_projection_list)
         return max(errors_projection_list)
 
     def projectData(self, image):
