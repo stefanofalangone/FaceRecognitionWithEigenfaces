@@ -5,7 +5,7 @@ from Utility import showImage
 
 class FaceSpace:
 
-    threshold = 10**-3
+    threshold = 0.1
     error_projection_threshold = 1.56*(10**25)
     eigenface_basis = None
     centroid = None
@@ -22,17 +22,19 @@ class FaceSpace:
     def computeEigenfaceBasis(self):
         AT_A = np.dot(self.training_set.T, self.training_set)
         U, D, V_T = np.linalg.svd(AT_A)
-        #eigenvectors = np.dot( self.training_set, V_T.T )
+        #U, D, V_T = np.linalg.svd(self.training_set)
+        print("finished svd", V_T.shape )
         eigenvectors = V_T.T
         eigenvectors = self.calculateEigenvectors(eigenvectors)
         i = 0
         current_vector = []
+        #print("D is ", D)
         while(D[i] > self.threshold and i < self.training_set[0, :].size ):
                 current_vector.append( eigenvectors[: , i] )
                 i = i + 1
         self.eigenface_basis = np.stack(current_vector, axis = -1)
 
-        #print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
+        print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
 
     """
         Determine linear combination of the M training set face images to form the eigenfaces
