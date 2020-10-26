@@ -26,6 +26,7 @@ class FaceSpace:
         print("finished svd", V_T.shape )
         eigenvectors = V_T.T
         eigenvectors = self.calculateEigenvectors(eigenvectors)
+
         i = 0
         current_vector = []
         #print("D is ", D)
@@ -36,6 +37,16 @@ class FaceSpace:
 
         print("rows are "+ str(self.eigenface_basis[:,0].size) + " cols dim are " + str(self.eigenface_basis[0, :].size))
 
+        #showImage(self.eigenface_basis[:, 0], 112, 92)
+        """showImage(self.training_set[:, 0], 112, 92)
+        linear_coeff = np.dot(self.training_set[:, 2], self.eigenface_basis)
+        print(linear_coeff)
+        print("my linear coeff", linear_coeff.shape )
+        my_projected_face = np.dot(self.eigenface_basis, linear_coeff)
+        my_projected_face = np.zeros(10304)
+        for i in range(319):
+            my_projected_face = my_projected_face + linear_coeff[i] * self.training_set[:, i]
+        showImage(my_projected_face , 112, 92)"""
     """
         Determine linear combination of the M training set face images to form the eigenfaces
     """
